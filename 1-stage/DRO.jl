@@ -10,12 +10,13 @@
 # Packages
 using JuMP
 using Gurobi
+using CPLEX
 using DataFrames
 using Statistics
 
 
 ## DRO (and CC) parameters
-theta = 20
+theta = 0 # When 0, then the model is SAA
 rho = 0 # theta^CVaR
 epsilon = 0.5
 
@@ -31,13 +32,14 @@ df_results[!,:obj]          = blocks .* 0.0
 df_results[!,:obj_passive]  = blocks .* 0.0
 df_results[!,:obj_active]   = blocks .* 0.0
 
-t1 = 100
+
+t1 = Int(burnin/block_size)
 t2 = length(TT_daily)
 
 for block=t1:t2 
     T   = TT_daily[block]
-    #m3s = Model(CPLEX.Optimizer)
-    m3s = Model(Gurobi.Optimizer)
+    m3s = Model(CPLEX.Optimizer)
+    #m3s = Model(Gurobi.Optimizer)
     set_silent(m3s)
     #************************************************************************
     # Variables
@@ -212,8 +214,8 @@ end
 CSV.write("Output/1-stage/DRO.csv", df_results)
 
 
-sum(df_results[100:end, :obj_passive])
-sum(df_results[100:end, :obj_active])
-std(df_results[100:end, :obj_passive])
-std(df_results[100:end, :obj_active])
+sum(df_results[t1:end, :obj_passive])
+sum(df_results[t1:end, :obj_active])
+std(df_results[t1:end, :obj_passive])
+std(df_results[t1:end, :obj_active])
 

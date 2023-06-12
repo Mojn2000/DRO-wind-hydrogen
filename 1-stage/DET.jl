@@ -35,14 +35,14 @@ df_results[!,:obj]          = blocks .* 0.0
 df_results[!,:obj_passive]  = blocks .* 0.0
 df_results[!,:obj_active]   = blocks .* 0.0
 
-t1 = 100
+t1 = Int(burnin/block_size)
 t2 = length(TT_daily)
 
 for block=t1:t2
     T   = TT_daily[block]
 
-    #m3s = Model(CPLEX.Optimizer)
-    m3s = Model(Gurobi.Optimizer)
+    m3s = Model(CPLEX.Optimizer)
+    #m3s = Model(Gurobi.Optimizer)
     set_silent(m3s)
 
     #************************************************************************
@@ -142,17 +142,17 @@ for block=t1:t2
 
 
     println("Block: ", block, " - ")
-    println("Objective value estimate: ", objective_value(m3s))
+    println("Objective value estimate: ", -objective_value(m3s))
     println("Objective value actual: ", df_results[block, :obj_active])
 
 end
 
 CSV.write("Output/1-stage/DET.csv", df_results)
 
-sum(df_results[100:end, :obj_passive])
-sum(df_results[100:end, :obj_active])
-mean(df_results[100:end, :obj_passive])
-mean(df_results[100:end, :obj_active])
+sum(df_results[t1:end, :obj_passive])
+sum(df_results[t1:end, :obj_active])
+mean(df_results[t1:end, :obj_passive])
+mean(df_results[t1:end, :obj_active])
 
 
 

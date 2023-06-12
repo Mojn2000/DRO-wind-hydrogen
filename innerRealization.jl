@@ -9,8 +9,8 @@ function innerRealisation_active(p_DA, T)
     ##
 
 
-    #m3s = Model(CPLEX.Optimizer)
-    m3s = Model(Gurobi.Optimizer)
+    m3s = Model(CPLEX.Optimizer)
+    #m3s = Model(Gurobi.Optimizer)
     # make model silent
     set_silent(m3s)
 
@@ -117,8 +117,8 @@ function innerRealisation_passive(p_DA, pe_in, pc_in, T)
     ##
 
 
-    #m3s = Model(CPLEX.Optimizer)
-    m3s = Model(Gurobi.Optimizer)
+    m3s = Model(CPLEX.Optimizer)
+    #m3s = Model(Gurobi.Optimizer)
     # make model silent
     set_silent(m3s)
 

@@ -27,7 +27,7 @@ end
 df.imbalPred = df.spotPred 
 
 # time parameters
-block_size = 8 # artificial block size in hours
+block_size = 24 # artificial block size in hours
 T = collect(1:nrow(df))
 
 # Wind farm
@@ -159,7 +159,7 @@ index_windwindMeas = copy(index_price)
 #quantile_cut = quantile(abs.(difference), 0.95)
 
 #Using the index vectors make similar vectors for the errors
-error_windwindMeas = Array{Any,1}(undef, length(T))
+error_windPower = Array{Any,1}(undef, length(T))
 error_DA        = Array{Any,1}(undef, length(T))
 error_B         = Array{Any,1}(undef, length(T))
 
@@ -169,10 +169,10 @@ global frac_rounded = 0
 for i in 1:length(T)
     dif_p = df[index_windwindMeas[i],:windMeas] .- df[index_windwindMeas[i],:windFor]
     true_p = df[i,:windMeas] .- df[i,:windFor]
-    error_windwindMeas[i] = min.(max.(-P_W[i],(dif_p .+ improv*(true_p .-mean(dif_p)) )),C_W-P_W[i])
+    error_windPower[i] = min.(max.(-P_W[i],(dif_p .+ improv*(true_p .-mean(dif_p)) )),C_W-P_W[i])
 
-    global frac_rounded = frac_rounded + sum(-P_W[i] .== error_windwindMeas[i])
-    global frac_rounded = frac_rounded + sum(C_W-P_W[i] .== error_windwindMeas[i])
+    global frac_rounded = frac_rounded + sum(-P_W[i] .== error_windPower[i])
+    global frac_rounded = frac_rounded + sum(C_W-P_W[i] .== error_windPower[i])
 
 
     dif_da = df[index_price[i],:spotMeas] .- df[index_windwindMeas[i],:spotPred]
