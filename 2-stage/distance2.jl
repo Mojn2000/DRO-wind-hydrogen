@@ -26,4 +26,3 @@ end
 # save Wdist_matrix
 CSV.write("2-stage/dist2.csv", DataFrame(Wdist_matrix, :auto))
 
-

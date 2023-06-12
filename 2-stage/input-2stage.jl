@@ -25,7 +25,7 @@ df.forecast_bal = df.spotPred
 T = collect(1:nrow(df))
 
 # Wind farm
-C_W = 3# spotMeas windFor wind in MW
+C_W = 3 # spotMeas windFor wind in MW
 CF = df[T,:windFor] # wind production
 P_W = CF * C_W # wind production 
 P_W_actual = df[T,:windMeas]*C_W
