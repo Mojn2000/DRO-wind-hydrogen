@@ -22,7 +22,7 @@ end
 hor = 36 # forecasting horizon
 num_shifts = 8 # Number of shifts
 burnin = 90
-end_date = length(df[:,:spotMeas])/24-1
+end_date = Int(length(df[:,:spotMeas])/24-1)
 
 
 # Clustering

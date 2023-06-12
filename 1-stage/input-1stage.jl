@@ -155,11 +155,11 @@ end
 
 index_windwindMeas = copy(index_price)
 
-total_da = df[1:912*8,:spotMeas]-df[1:912*8,:spotPred]
-total_bal = df[1:912*8,:imbalMeas]-df[1:912*8,:spotPred]
+#total_da = df[1:end,:spotMeas]-df[1:end,:spotPred]
+#total_bal = df[1:end,:imbalMeas]-df[1:end,:spotPred]
 
-difference = total_da-total_bal
-quantile_cut = quantile(abs.(difference), 0.95)
+#difference = total_da-total_bal
+#quantile_cut = quantile(abs.(difference), 0.95)
 
 #Using the index vectors make similar vectors for the errors
 error_windwindMeas = Array{Any,1}(undef, length(T))
