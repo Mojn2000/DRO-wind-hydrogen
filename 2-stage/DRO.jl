@@ -7,16 +7,16 @@ using CSV
 include("input-2stage.jl")
 include("../innerRealization.jl")
 
-# read Wasserstein distance based on wind power only
-df_Wdist = CSV.read("2-stage/Wdists_wind.csv", DataFrame, header=true)
+# read Wasserstein distance based on forecasts
+df_Wdist = CSV.read("2-stage/dist-pred.csv", DataFrame, header=true)
 df_Wdist = Matrix(df_Wdist)
 
 # read synthetic samples
 df_samples = CSV.read("2-stage/X_sample.csv", DataFrame, header=false) # DA, B, pow
 df_samples = Matrix(df_samples)
 
-# read Wasserstein distance based on all variables
-dist = CSV.read("2-stage/dist_all.csv", DataFrame, header=true)
+# read Wasserstein distance based on measurements
+dist = CSV.read("2-stage/dist-meas.csv", DataFrame, header=true)
 dist = Matrix(dist)
 
 # DRO parameters
@@ -49,15 +49,11 @@ while it < length(param_list)
 
     ## in sample
     t1 = 42*3+1
-    #t2 = 546
-    #t2 = 300
-    ## out of sample
-    #t1 = 547
     t2 = length(TT_daily)
     block = t1
 
     for block=t1:t2
-        # find the 10 closest empirical sample to current based on wind power only
+        # find the 10 closest empirical sample to current based on forecasts
         T = TT_daily[block] # time index
         SN = [] # empirical set
         aux = sort(df_Wdist[block,1:(block-1)])[1:nN] 

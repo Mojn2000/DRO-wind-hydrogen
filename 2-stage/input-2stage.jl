@@ -1,4 +1,4 @@
-# Power-to-X Modelling and Optimization
+# windFor-to-X Modelling and Optimization
 #************************************************************************
 # Input Data
 #************************************************************************
@@ -12,29 +12,30 @@ digs = 2 # rounding digits
 block_size = 8 ## size of the pseudo days
 
 # read csv 
-df = DataFrame(CSV.File("Data/all_dat_merged.csv"))
+df = DataFrame(CSV.File("market data/merged-data.csv"))
 
-# set missing values to previous value for 'bal_price'
-for i in 2:length(df.bal_price)
-    if ismissing(df.bal_price[i])
-        df.bal_price[i] = df.nominal[i-1]
+# set missing values to previous value for 'imbalMeas'
+for i in 2:length(df.imbalMeas)
+    if ismissing(df.imbalMeas[i])
+        df.imbalMeas[i] = df.spotMeas[i-1]
     end
 end
-df.forecast_bal = df.forecast
+df.forecast_bal = df.spotPred
 
 T = collect(1:nrow(df))
 
 # Wind farm
-C_W = 3# nominal power wind in MW
-CF = df[T,:power] # wind production
+C_W = 3# spotMeas windFor wind in MW
+CF = df[T,:windFor] # wind production
 P_W = CF * C_W # wind production 
-P_W_actual = df[T,:power_actual]*C_W
+P_W_actual = df[T,:windMeas]*C_W
 
-lambda_DA        = df[T,:forecast] # electricity day ahead market price
-lambda_DA_actual = df[T,:nominal]
+lambda_DA        = df[T,:spotPred] # electricity day ahead market price
+lambda_DA_actual = df[T,:spotMeas]
 
 lambda_B         = df[T,:forecast_bal] # electricity balance market price
-lambda_B_actual  = df[T,:bal_price] # electricity balance market price
+lambda_B_actual  = df[T,:imbalMeas] # electricity balance market price
+
 
 # Wasserstein distance function
 function EarthMoverDistance(a::Vector, b::Vector)
@@ -144,7 +145,7 @@ function U_cell(Temp,p,i)
     U_cell = U_rev(Temp) + ((r1 + d1) + r2 * Temp + d2 * p) * i + s * log(10,(t1 + t2 / Temp + t3 / Temp^2) * i + 1) 
     return U_cell
 end
-# Cell power consumption
+# Cell windFor consumption
 function P_cell(Temp,p,i)
     P_cell = i * U_cell(Temp,p,i)
     return P_cell
