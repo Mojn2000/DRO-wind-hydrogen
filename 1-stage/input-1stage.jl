@@ -116,21 +116,18 @@ for t in 1:length(T)
     index_price[t] = []
 end
 
+burnin = 90*24
 j = [1]
-for t in Int(720/block_size+1):length(T)
+for t in Int(burnin/block_size+1):length(T)
     println(j[1])
-    #idx = findall( clusters[546].assignments[t] .== clusters[546].assignments)
     idx = findall( clusters[j[1]].assignments[t] .== clusters[j[1]].assignments)
-    #idx = idx =round.(1:7296)
     bb = findall([sum(TT_daily[block].==t)>0 for block=1:length(TT_daily)])
     if ( sum(idx .< (TT_daily[bb[1]][1] - 12)) >=  10 ) 
         idx = idx[idx .< (TT_daily[bb[1]][1] - 12)]
-        #idx = idx[idx .< (t-24)]
     end
-    #idx = idx[idx .< (TT_daily[bb[1]][1] + 36)]
     idx = reverse(idx)
     index_price[t] = idx[1:minimum([length(idx) NE])]
-    if mod(t,24)==0 && t>=744
+    if mod(t,24)==0 && t>=burnin+24
         j[1]=j[1]+1
         
     end
