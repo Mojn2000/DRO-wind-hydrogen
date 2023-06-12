@@ -23,11 +23,11 @@ This repository includes the implementation of several models used in the thesis
 * Wasserstein-based Distributionally Robust Optimization (DRO) Model:
   * This model incorporates the Wasserstein distance metric to handle uncertainty and robustness considerations.
 * Wasserstein-based DRO Model with Covariance Structure:
-  * This model extends the previous DRO model by including the covariance structure between the imbalance and day ahead prices in the ambiguity set.
+  * This model extends the previous DRO model by including the covariance structure between the imbalance and day ahead prices in the ambiguity set. The model is a mixed-integer SDP and to solve the problem you will nedd the solver [pajarito](https://github.com/jump-dev/Pajarito.jl).
 * Two-Stage Wasserstein DRO Model:
   * This model is equivalent to a two-stage sample average approximation model but formulated within the DRO framework. When the Wasserstein radius is set to 0, it reduces to a standard two-stage SAA model.
 
-Please refer to the individual model files for more details on their implementation and usage.
+All 1-stage models use a input file called input-1stage.jl. It will setup all relevant constants and errors for the error sets for each hour of the optimization problems. For the 2-stage problem there is a similar file called input-2stage.jl.
 
 ## Authors
 This thesis research is conducted by Anton Ruby Larsen and Mads Esben Hansen. 
