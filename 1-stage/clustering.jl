@@ -21,11 +21,14 @@ end
 
 hor = 36 # forecasting horizon
 num_shifts = 8 # Number of shifts
+burnin = 90
+end_date = length(df[:,:spotMeas])/24-1
+
 
 # Clustering
-adj_ba = adjust_vectors(df[1:912*8,:spotMeas], df[1:912*8,:imbalMeas], 100)
-clust_data = Matrix([adj_ba df[1:912*8,:windFor] df[1:912*8,:spotPred] df[1:912*8,:loadFor]])
-forcast_data = Matrix([adj_ba df[1:912*8,:windFor] df[1:912*8,:spotPred] df[1:912*8,:loadFor] df[1:912*8,:trans]])
+adj_ba = adjust_vectors(df[:,:spotMeas], df[:,:imbalMeas], 100)
+clust_data = Matrix([adj_ba df[:,:windFor] df[:,:spotPred] df[:,:loadFor]])
+forcast_data = Matrix([adj_ba df[:,:windFor] df[:,:spotPred] df[:,:loadFor] df[:,:trans]])
 
 
 
@@ -41,8 +44,8 @@ for i in 1:length(X_t[:,1])
 end
 
 i = 0
-Xii_t = Xi_t[:,1:(31+i)*24]
-Xiif_t = Xif_t[:,1:(31+i)*24]
+Xii_t = Xi_t[:,1:(burnin+1+i)*24]
+Xiif_t = Xif_t[:,1:(burnin+1+i)*24]
 
 features = Xiif_t[2:end, 1:end]'
 targets = Xiif_t[1, 1:end]'
@@ -71,24 +74,22 @@ model = xgboost(features_train, num_round, label = targets_train, eta = 0.05, ma
 #res = predict(model, features_test)
 res2 = XGBoost.predict(model, features_test)
 
-Xii_t[1,31*24-hor+1:31*24] .= (res2)
+Xii_t[1,(burnin+1)*24-hor+1:(burnin+1)*24] .= (res2)
 
 
 Dist_train_un = Distances.pairwise(Distances.SqEuclidean(), Xii_t)
 
 R_train = kmedoids(Dist_train_un,20, maxiter=200)
 time_tilnow = 0
-end_date = 303
-end_date_adj = end_date-30
+end_date_adj = end_date-(burnin)
 Rs = Array{Any,1}(undef, end_date_adj)
-scaling = (31:end_date).^2
-no_k = 20 #.+ 2/30 .*(1:end_date_adj)
+no_k = 20 
 res = copy(Xi_t[1,:])
 res .= 0
-res[31*24-hor+1:31*24] .= res2
+res[(burnin+1)*24-hor+1:(burnin+1)*24] .= res2
 no_k = round.(no_k)
 j = 1
-for i in 31:end_date
+for i in (burnin+1):end_date
     t = @elapsed begin
     Xi = Xi_t[:,1:(i+1)*24]
     Xii = Xif_t[:,1:(i+1)*24]
@@ -122,11 +123,7 @@ for i in 31:end_date
     Xi[1,(i-1)*24+13:(i+1)*24] .= (res2)
     res[(i-1)*24+13:(i+1)*24] .= (res2)
 
-    if j<1000
-        distanceMatrix = Distances.pairwise(Distances.SqEuclidean(), Xi)
-    else
-        distanceMatrix = Dist_t[1:i*8,1:i*8]
-    end
+    distanceMatrix = Distances.pairwise(Distances.SqEuclidean(), Xi)
 
     Rs[j] = kmedoids(distanceMatrix, Int(no_k); maxiter=200)
     end
@@ -148,6 +145,7 @@ end
 Rs2 = Array{Any,1}(undef, end_date_adj+1)
 Rs2[1] = R_train
 for i in 2:length(Rs2)
+    println(i)
     Rs2[i] = Rs[i-1]
 end
 Rs2
