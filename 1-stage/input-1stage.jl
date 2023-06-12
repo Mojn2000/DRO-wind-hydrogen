@@ -108,9 +108,8 @@ end
 
 NE      = 40 # number of historical errors
 
-#=
 index_price = Array{Any,1}(undef, length(T))
-clusters = load_object("Clusters_mediods_Original_Error_13_many_24_gb_l8_extend_train_nodb_db_m00_adj")
+clusters = load_object("Clusters")
 
 
 for t in 1:length(T)
@@ -195,7 +194,6 @@ for i in 1:length(T)
     length_error[i] = Int(length(index_windwindMeas[i]))
 end
 
-=#
 
 #************************************************************************
 # Coefficients
