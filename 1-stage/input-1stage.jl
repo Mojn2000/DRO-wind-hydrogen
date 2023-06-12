@@ -16,7 +16,6 @@ using Statistics
 digs = 2 # rounding digits
 #************************************************************************
 # read csv 
-#df = DataFrame(CSV.File("Data/all_dat_merged.csv"))
 df = DataFrame(CSV.File("market data/merged-data.csv"))
 
 # set missing values to previous value for 'imbalMeas'
@@ -25,10 +24,9 @@ for i in 2:length(df.imbalMeas)
         df.imbalMeas[i] = df.spotMeas[i-1]
     end
 end
-
-# mean value of spotPred and imbalMeas
 df.imbalPred = df.spotPred 
 
+# time parameters
 block_size = 8 # artificial block size in hours
 T = collect(1:nrow(df))
 
@@ -42,7 +40,7 @@ lambda_DA        = df[T,:spotPred] # electricity day ahead market price
 lambda_DA_actual = df[T,:spotMeas]
 
 lambda_B         = df[T,:imbalPred] # electricity balance market price
-lambda_B_actual  = df[T,:imbalMeas] # electricity balance market price
+lambda_B_actual  = df[T,:imbalMeas] 
 
 
 # Electrolyzer
@@ -110,7 +108,7 @@ end
 
 NE      = 40 # number of historical errors
 
-
+#=
 index_price = Array{Any,1}(undef, length(T))
 clusters = load_object("Clusters_mediods_Original_Error_13_many_24_gb_l8_extend_train_nodb_db_m00_adj")
 
@@ -197,6 +195,7 @@ for i in 1:length(T)
     length_error[i] = Int(length(index_windwindMeas[i]))
 end
 
+=#
 
 #************************************************************************
 # Coefficients

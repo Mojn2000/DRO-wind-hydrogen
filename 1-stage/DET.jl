@@ -1,7 +1,6 @@
 #************************************************************************
 # Fully Deterministic model
 # 
-# Uses convex trick for bin variables
 #
 #
 # Power-to-X Modelling and Optimization 
@@ -9,7 +8,6 @@
 #************************************************************************
 # Packages
 using JuMP
-#using CPLEX
 using Gurobi
 using DataFrames
 using CSV
@@ -21,14 +19,14 @@ include("../innerRealization.jl")
 include("input-1stage.jl")
 
 ## prepare data DataFrame
-df.p_DA = df.speed*0
-df.p_DAn= df.speed*0
-df.p_B  = df.speed*0
-df.p_Bn = df.speed*0
-df.p_E  = df.speed*0
-df.p_C  = df.speed*0
-df.d    = df.speed*0
-df.start= df.speed*0
+df.p_DA = df.spotMeas*0
+df.p_DAn= df.spotMeas*0
+df.p_B  = df.spotMeas*0
+df.p_Bn = df.spotMeas*0
+df.p_E  = df.spotMeas*0
+df.p_C  = df.spotMeas*0
+df.d    = df.spotMeas*0
+df.start= df.spotMeas*0
 
 blocks = 1:length(TT_daily)
 df_results = DataFrame()
@@ -37,21 +35,8 @@ df_results[!,:obj]          = blocks .* 0.0
 df_results[!,:obj_passive]  = blocks .* 0.0
 df_results[!,:obj_active]   = blocks .* 0.0
 
-
-block = 399
-## in sample
-#t1 = 91
-#t2 = 546
-
-t1 = 43
-#t2 = 182
-#t1 = 183
+t1 = 100
 t2 = length(TT_daily)
-#t2 = 300
-
-## out of sample
-#t1 = 547
-#t2 = length(TT_daily)
 
 for block=t1:t2
     T   = TT_daily[block]
@@ -105,15 +90,10 @@ for block=t1:t2
 
     #**************************     aux constraints     ************************************
     # sanity caps on power sold in DA and balance market
-    #@constraint(m3s, [t=T],   -C_W <= p_B[t])
-    #@constraint(m3s, [t=T],    C_W >= p_B[t])
     @constraint(m3s, [t=T],    -p_E[t]-p_C[t]  <= p_DA[t])
     @constraint(m3s, [t=T],    -p_w[t]  <= p_DA[t])
     @constraint(m3s, [t=T],    C_W >= p_DA[t])
     
-    
-    @constraint(m3s, [t=T], p_DA[t] == p_B[t])
-
     # energy in must be equal to energy out
     @constraint(m3s, [t=T], p_w[t] - p_DA[t] - p_B[t] - p_E[t] - p_C[t] == 0)
 
@@ -122,8 +102,6 @@ for block=t1:t2
     @constraint(m3s, [t=T],    p_B[t] == p_Bp[t] - p_Bn[t])
 
     #******************* Deterministic constraints (from original problem) *************************
-    # Standby power from market
-    #@constraint(m3s, [t=T],    p_DAn[t] <= P_sb * z_sb[t])
     # Total electricity consumption
     @constraint(m3s, [t=T],    p_E[t] == e[t] + P_sb * z_sb[t])
     # Hydrogen production
@@ -169,30 +147,12 @@ for block=t1:t2
 
 end
 
-#CSV.write("Data/Output/1-stage/DET/Deterministic.csv", df_results)
+CSV.write("Output/1-stage/DET.csv", df_results)
 
-sum(df_results[43:182, :obj_passive])
-sum(df_results[43:182, :obj_active])
-mean(df_results[43:182, :obj_passive])
-mean(df_results[43:182, :obj_active])
-
-sum(df_results[183:end, :obj_passive])
-sum(df_results[183:end, :obj_active])
-mean(df_results[183:end, :obj_passive])
-mean(df_results[183:end, :obj_active])
-
-
-
-
-
-
-## Deterministic 24h
-# train passive  => 479,388
-# train active   => 536,004
-# test passive   => 333,177
-# test active    => 348,102
-
-
+sum(df_results[100:end, :obj_passive])
+sum(df_results[100:end, :obj_active])
+mean(df_results[100:end, :obj_passive])
+mean(df_results[100:end, :obj_active])
 
 
 
