@@ -24,6 +24,6 @@ for i in 1:nS,j in (i+1):nS
 end
 
 # save Wdist_matrix
-CSV.write("2-stage/dist-pred.csv", DataFrame(Wdist_matrix, :auto))
+CSV.write("2-stage/dist2.csv", DataFrame(Wdist_matrix, :auto))
 
 
