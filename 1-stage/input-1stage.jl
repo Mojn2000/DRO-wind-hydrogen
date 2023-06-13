@@ -27,6 +27,7 @@ end
 df.imbalPred = df.spotPred 
 
 # time parameters
+burnin = 90*24 # burnin period in hours
 block_size = 24 # artificial block size in hours
 T = collect(1:nrow(df))
 
@@ -109,14 +110,13 @@ end
 NE      = 40 # number of historical errors
 
 index_price = Array{Any,1}(undef, length(T))
-clusters = load_object("Clusters")
+clusters = load_object("1-stage/Clusters")
 
 
 for t in 1:length(T)
     index_price[t] = []
 end
 
-burnin = 90*24
 j = [1]
 for t in Int(burnin/block_size+1):length(T)
     println(j[1])

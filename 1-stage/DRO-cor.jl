@@ -20,18 +20,16 @@ using Statistics
 # dependencies
 include("dependence-1stage-input.jl")
 
-## Optimal for sharp 
+## DRO (and CC) parameters 
 theta = 25
 rho = 0 # theta^CVaR
 epsilon = 0.5
 eta = 1.5
 
-t1 = 100
+t1 = Int(burnin/block_size)
 t2 = length(TT_daily)
 
-k = 0
 for block=t1:t2
-    k = k + 1
     T   = TT_daily[block]
     oa_solver = optimizer_with_attributes(Gurobi.Optimizer, 
                     MOI.Silent()=>true,
@@ -44,7 +42,7 @@ for block=t1:t2
     opt = optimizer_with_attributes(Pajarito.Optimizer, 
                     "oa_solver"=>oa_solver,
                     "conic_solver"=>conic_solver,
-                    "time_limit"=>120)
+                    "time_limit"=>60*5)
 
     m3s = Model(opt)
 
@@ -233,12 +231,11 @@ for block=t1:t2
     println("Objective value actual: ",   df_results[block, :obj_active])
 end
 
-CSV.write("Data/Output/DRO-cor.csv", df_results)
+CSV.write("Output/1-stage/DRO-cor.csv", df_results)
 
 
-sum(df_results[100:end, :obj_active])
-sum(df_results[100:end, :obj_passive])
-std(df_results[100:end, :obj_active])
-std(df_results[100:end, :obj_passive])
-
+sum(df_results[t1:end, :obj_passive])
+sum(df_results[t1:end, :obj_active])
+std(df_results[t1:end, :obj_passive])
+std(df_results[t1:end, :obj_active])
 

@@ -27,7 +27,7 @@ for i in 1:nN
 end
 
 # save dist matrix
-CSV.write("2-stage/dist-meas.csv", DataFrame(dist, :auto))
+CSV.write("2-stage/dist3.csv", DataFrame(dist, :auto))
 
 
 

@@ -41,8 +41,8 @@ t2 = length(TT_daily)
 for block=t1:t2
     T   = TT_daily[block]
 
-    m3s = Model(CPLEX.Optimizer)
-    #m3s = Model(Gurobi.Optimizer)
+    #m3s = Model(CPLEX.Optimizer)
+    m3s = Model(Gurobi.Optimizer)
     set_silent(m3s)
 
     #************************************************************************

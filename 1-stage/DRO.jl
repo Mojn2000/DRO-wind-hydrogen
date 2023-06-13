@@ -10,13 +10,12 @@
 # Packages
 using JuMP
 using Gurobi
-using CPLEX
+#using CPLEX
 using DataFrames
 using Statistics
 
-
 ## DRO (and CC) parameters
-theta = 0 # When 0, then the model is SAA
+theta = 20 # When 0, then the model is SAA
 rho = 0 # theta^CVaR
 epsilon = 0.5
 
@@ -38,8 +37,8 @@ t2 = length(TT_daily)
 
 for block=t1:t2 
     T   = TT_daily[block]
-    m3s = Model(CPLEX.Optimizer)
-    #m3s = Model(Gurobi.Optimizer)
+    #m3s = Model(CPLEX.Optimizer)
+    m3s = Model(Gurobi.Optimizer)
     set_silent(m3s)
     #************************************************************************
     # Variables
@@ -205,12 +204,9 @@ for block=t1:t2
     println("Block: ", block, " - ")
     println("Objective value estimate: ", -objective_value(m3s))
     println("Objective value actual: ", df_results[block, :obj_active])
-    println([round(value.(p_DA)[t],digits=2) for t=T])
-    println("##############################################")
-
-
-    #append!(mean_dro, mean(df_results[df_results[:, :obj] .!= 0, :obj_active]))
 end
+
+#CSV.write("Output/1-stage/SAA.csv", df_results)
 CSV.write("Output/1-stage/DRO.csv", df_results)
 
 
